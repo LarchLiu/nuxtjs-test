@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "bumpp": "9.1.0",
-    "nuxt": "^3.0.0"
+    "nuxt": "^3.5.0"
   }
 }
