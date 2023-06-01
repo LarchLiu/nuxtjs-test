@@ -5,9 +5,11 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "release": "bumpp package.json --commit --push --tag",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "bumpp": "9.1.0",
     "nuxt": "^3.0.0"
   }
 }

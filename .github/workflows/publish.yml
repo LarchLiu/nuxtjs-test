@@ -1,0 +1,65 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        os: [ubuntu-latest]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
+
+      - run: pnpm install
+      - run: pnpm run build
+
+      - name: Save files action
+        uses: LarchLiu/actions-save-files@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: publish
+          publish_dir: ./app/bot/telegram-cl/dist, ./app/extension/chrome/dist
+          full_commit_message: ${{ github.event.head_commit.message }}
+
+      - name: zip extension
+        uses: vimtor/action-zip@v1
+        with:
+          files: ./.output
+          recursive: false
+          dest: ./chrome-extension.zip
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - run: npx changelogithub # or changelogithub@0.12 if ensure the stable result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release
+        - uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          artifacts: "chrome-extension.zip"
