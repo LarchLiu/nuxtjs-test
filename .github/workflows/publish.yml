@@ -43,26 +43,13 @@ jobs:
           recursive: false
           dest: ./chrome-extension.zip
 
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-
       - run: npx changelogithub # or changelogithub@0.12 if ensure the stable result
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get latest release url
         id: get-release-url
-        run: echo "::set-output name=upload_url::$(curl -s https://api.github.com/repos/LarchLiu/nuxtjs-test/releases/latest | jq '.upload_url' | sed 's/\"//g')"
-        
+        run: echo "upload_url=$(curl -s https://api.github.com/repos/LarchLiu/nuxtjs-test/releases/latest | jq '.upload_url' | sed 's/\"//g')" >> $GITHUB_OUTPUT
 
       - name: Upload Release Asset
         id: upload-release-asset 
