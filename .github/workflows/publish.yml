@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Release
-        - uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1
         with:
           tag: latest
           artifacts: "chrome-extension.zip"
